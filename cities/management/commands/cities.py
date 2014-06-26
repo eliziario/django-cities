@@ -16,7 +16,7 @@ http://download.geonames.org/export/zip/
 
 import os
 import sys
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import logging
 import zipfile
 import time
@@ -85,7 +85,7 @@ class Command(BaseCommand):
         urls = [e.format(filename=filename) for e in settings.files[filekey]['urls']]
         for url in urls:
             try:
-                web_file = urllib.urlopen(url)
+                web_file = urllib.request.urlopen(url)
                 if 'html' in web_file.headers['content-type']: raise Exception()
                 break
             except:
@@ -134,7 +134,7 @@ class Command(BaseCommand):
             file = zipfile.ZipFile(file).open(name + '.txt')
 
         data = (
-            dict(zip(settings.files[filekey]['fields'], row.split("\t"))) 
+            dict(list(zip(settings.files[filekey]['fields'], row.split("\t")))) 
             for row in file if not row.startswith('#')
         )
 
@@ -185,7 +185,7 @@ class Command(BaseCommand):
             if not self.call_hook('country_post', country, item): continue 
             country.save()
 
-        for country, neighbour_codes in neighbours.items():
+        for country, neighbour_codes in list(neighbours.items()):
             neighbours = [x for x in [countries.get(x) for x in neighbour_codes if x] if x]
             country.neighbours.add(*neighbours)
         
@@ -489,8 +489,8 @@ class Command(BaseCommand):
             self.logger.debug("Adding postal code: {0}, {1}".format(pc.country, pc))
             try:
                 pc.save()
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
 
     def flush_country(self):
         self.logger.info("Flushing country data")

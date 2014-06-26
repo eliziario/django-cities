@@ -1,7 +1,7 @@
 from django.utils.encoding import force_unicode
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point
-from conf import settings
+from .conf import settings
 
 __all__ = [
         'Point', 'Country', 'Region', 'Subregion',
@@ -138,7 +138,7 @@ class PostalCode(Place):
     @property
     def name_full(self):
         """Get full name including hierarchy"""
-        return u', '.join(reversed(self.names)) 
+        return ', '.join(reversed(self.names)) 
 
     @property
     def names(self):
